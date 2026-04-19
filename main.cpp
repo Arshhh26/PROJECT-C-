@@ -9,68 +9,252 @@ private:
     string password;
     string roomtype;
 public:
-    user(string a, string b, string c= "") {
-        username = a;
-        password = b;
-        roomtype = c; 
+    user(string a, string b, string c= ""){
+        username=a;
+        password=b;
+        roomtype=c; 
     }
-    string getusername(){
+    string getUserName(){
         return username;
     }
-    string getpassword(){
+    string getPassword(){
         return password;
     }   
-    string getroomtype(){
+    string getRoomType(){
         return roomtype;
-    }   
+    }  
 };
 
 
 
-class manager{
+class AuthManager{
     public:
-    //for registration
-    void userRegistration()
-    { string username , password , roomtype;
-        cout<< "\n Registeration Section \n"; 
-        cout<<"Enter username:";
-        cin>>username;
+        //for registration
+        void userRegistration()
+        { 
+            string username , password , roomtype;
+            cout<< "\n Registeration Section \n"; 
+            cout<<"Enter username:";
+            cin>>username;
 
-        cout<<"Enter password:";
-        cin>>password;
-        
-        ofstream file("login.txt",ios::app);
-        file<<username<<" "<<password<<" "<<endl;
-        file.close();
+            cout<<"Enter password:";
+            cin>>password;
+            
+            ofstream file("login.txt",ios::app);
+            file<<username<<" "<<password<<" "<<endl;
+            file.close();
 
-        cout<<"Registration successful!"<<endl;
+            cout<<"Registration successful!"<<endl;
 
-    } 
+        } 
   
-    //for login
-    bool loginUser(string &loggedUser)
-    {
-    string username, password;
-    cout << "\n Login \n";
+        //for login
+        bool loginUser(string &loggedUser)
+        {
+            string username, password;
+            cout <<"\n Login \n";
 
-    cout <<"Enter Username:";
-    cin >> username;
+            cout <<"Enter Username:";
+            cin >>username;
 
-    cout<<"Enter Password:";
-    cin>>password;
+            cout<<"Enter Password:";
+            cin>>password;
 
-    ifstream file("login.txt");
-    string u,p;
+            ifstream file("login.txt");
+            string u,p;
 
-        while (file>>u>>p) {
-            if (u==username && p==password) {
-                loggedUser=username;
-                cout<<"Login successful!\n";
-                return true;
+            while (file>>u>>p) {
+                if (u==username && p==password) {
+                    loggedUser=username;
+                    cout<<"Login successful!\n";
+                    return true;
+                }
             }
-        }
 
-        cout << "Invalid credentials!\n";
-        return false;
+            cout << "Invalid credentials!\n";
+            return false;
     }
 };
+
+class Manager{
+    private: 
+        vector<user> doubleQueue;
+
+        int SingleRoom;
+        int DoubleRoom;
+        int RoomCounter;
+
+    public:
+        Manager(){
+            SingleRoom=120;
+            DoubleRoom=273;
+            RoomCounter=1;
+        }
+
+
+        void Save(string RoomNumber, vector<user> users) {
+            ofstream file("users.txt", ios::app);
+
+            file <<"Room No: "<<RoomNumber<< endl;
+
+            for (int i = 0;i<users.size();i++) {
+                file << "User: " << users[i].getUserName()
+                    << " | Type: " << users[i].getRoomType() << endl;
+            }
+
+            file << "----------------------\n";
+            file.close();
+        
+        }
+        // display availability
+        void showAvailability() {
+            cout << "\n--- Room Availability ---\n";
+            cout << "Single Rooms: " << SingleRoom << endl;
+            cout << "Double Rooms: " << DoubleRoom << endl;
+        }
+
+        // allocate room
+        void allocateRoom(string username) {
+            string type;
+
+            cout << "Enter Room Type (single/double): ";
+            cin >> type;
+
+            user u(username, "", type);
+
+            //Single Rooms
+            if (type == "single") {
+                if(SingleRoom<=0){
+                    cout<<"No single rooms available"<<endl;
+                    return;
+                }
+            
+
+                vector<user> temp;
+                temp.push_back(u);
+
+                string RoomNumber = "S"+to_string(RoomCounter++);
+                Save(RoomNumber, temp);
+
+                SingleRoom--;
+
+                cout <<"Single room allotted!\n";
+                cout <<"Your Room Number is: "<<RoomNumber<<endl;
+            }
+
+            // DOUBLE ROOM
+            else if (type=="double"){
+                if (DoubleRoom<=0) {
+                    cout <<"No double rooms available!\n";
+                    return;
+                }
+
+                doubleQueue.push_back(u);
+
+                if (doubleQueue.size()==2){
+                    string RoomNumber="D"+to_string(RoomCounter++);
+
+                    cout << "Room allotted to "
+                        << doubleQueue[0].getUserName()<<" & "
+                        << doubleQueue[1].getUserName()<<endl;
+                    cout <<"Room Number is: "<<RoomNumber<<endl; 
+                    doubleQueue.clear();
+                    DoubleRoom--;
+                }
+                else {
+                    cout <<"Waiting for another user...\n";
+                }
+            }
+
+            else {
+                cout << "Invalid type!\n";
+            }
+
+        }
+        void viewBookings() {
+            ifstream file("users.txt");
+
+            if (!file) {
+                cout << "No booking records found!\n";
+                return;
+            }
+
+            string line;
+            cout << "\n----- All Bookings -----\n";
+            while (getline(file, line)) {
+                cout << line << endl;
+            }
+            file.close();
+        }
+        
+};
+
+int main() {
+
+    AuthManager auth;
+    Manager manager;
+
+    int choice;
+    string loggedUser;
+
+    cout << "===== Hostel Management System =====\n";
+
+    // LOGIN / REGISTER LOOP
+    do {
+        cout << "\n1. Register\n2. Login\nChoice: ";
+        cin >> choice;
+
+        // if (choice == 1) {
+        //     auth.userRegistration();
+        // }
+        // else if (choice == 2) {
+        //     if (auth.loginUser(loggedUser)) break;
+        // }
+        switch(choice){
+        case 1:
+            auth.userRegistration();
+            break;
+
+        case 2:
+            if(auth.loginUser(loggedUser)){
+                // exit
+                choice=-1;  
+            }
+            break;
+
+        default:
+            cout<< "Invalid choice! Try again.\n";
+    }
+
+    } while(choice!=-1);
+
+    // AFTER LOGIN
+    do{
+        cout<<"\n1. Book Room\n2. Check Availability\n3. View Bookings\n0. Exit\nChoice: ";
+        cin>>choice;
+
+        switch(choice){
+            case 1:
+                manager.allocateRoom(loggedUser);
+                break;
+
+            case 2:
+                manager.showAvailability();
+                break;
+
+            case 3:
+                manager.viewBookings();
+                break;
+
+            case 0:
+                cout<<"Exiting...\n";
+                break;
+
+            default:
+                cout<<"Invalid choice\n";
+        }
+
+    } while(choice != 0);
+
+    return 0;
+}
