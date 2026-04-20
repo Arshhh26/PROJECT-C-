@@ -157,7 +157,10 @@ class Manager{
                     cout << "Room allotted to "
                         << doubleQueue[0].getUserName()<<" & "
                         << doubleQueue[1].getUserName()<<endl;
-                    cout <<"Room Number is: "<<RoomNumber<<endl; 
+                    cout <<"Room Number is: "<<RoomNumber<<endl;
+                    
+                    Save(RoomNumber, doubleQueue);
+                    
                     doubleQueue.clear();
                     DoubleRoom--;
                 }
