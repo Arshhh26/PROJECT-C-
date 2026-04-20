@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <string>
 using namespace std;
 
 class user {
@@ -192,11 +193,10 @@ class Manager{
         
 };
 
-int main() {
+    void Booking(AuthManager auth, Manager manager, string loggedUser);
+    void Login(AuthManager auth, Manager manager);
 
-    AuthManager auth;
-    Manager manager;
-
+void Login(AuthManager auth,Manager manager){
     int choice;
     bool end;
     string loggedUser;
@@ -222,14 +222,12 @@ int main() {
 
         case 2:
             if(auth.loginUser(loggedUser)){
-                // exit
-                choice=-1;  
+                Booking(auth,manager,loggedUser);
             }
             break;
         case 3:
             cout<<"Exiting....";
-            choice=-1;
-            end=true;
+            return;
 
             break;
             
@@ -238,10 +236,12 @@ int main() {
     }
 
     } while(choice!=-1);
+}
 
-    // AFTER LOGIN
-    if(end!=true){
-        do{
+void Booking(AuthManager auth,Manager manager,string loggedUser){
+    
+    int choice;
+    do{
             cout<<"____________________________________________________________________________";
             cout<<"\n1. Book Room\n2. Check Availability\n3. View Bookings\n0. Exit\nChoice: ";
             cin>>choice;
@@ -261,14 +261,95 @@ int main() {
 
                 case 0:
                     cout<<"Exiting...\n";
-                    break;
+                    Login(auth,manager);
+                    return;
 
                 default:
                     cout<<"Invalid choice\n";
             }
 
         } while(choice != 0);
-    }
+}
+
+int main() {
+
+    AuthManager auth;
+    Manager manager;
+
+    int choice;
+    bool end;
+    string loggedUser;
+
+    cout << "===== Hostel Management System =====\n";
+
+    Login(auth,manager);
+
+    // // LOGIN / REGISTER LOOP
+    // do {
+    //     cout<<"____________________________________________________________________________";
+    //     cout << "\n1. Register\n2. Login\n3. Exit\nChoice: ";
+    //     cin >> choice;
+
+    //     // if (choice == 1) {
+    //     //     auth.userRegistration();
+    //     // }
+    //     // else if (choice == 2) {
+    //     //     if (auth.loginUser(loggedUser)) break;
+    //     // }
+    //     switch(choice){
+    //     case 1:
+    //         auth.userRegistration();
+    //         break;
+
+    //     case 2:
+    //         if(auth.loginUser(loggedUser)){
+    //             // exit
+    //             choice=-1;  
+    //         }
+    //         break;
+    //     case 3:
+    //         cout<<"Exiting....";
+    //         choice=-1;
+    //         end=true;
+
+    //         break;
+            
+    //     default:
+    //         cout<< "Invalid choice! Try again.\n";
+    // }
+
+    // } while(choice!=-1);
+
+    // // AFTER LOGIN
+    // if(end!=true){
+    //     do{
+    //         cout<<"____________________________________________________________________________";
+    //         cout<<"\n1. Book Room\n2. Check Availability\n3. View Bookings\n0. Exit\nChoice: ";
+    //         cin>>choice;
+
+    //         switch(choice){
+    //             case 1:
+    //                 manager.allocateRoom(loggedUser);
+    //                 break;
+
+    //             case 2:
+    //                 manager.showAvailability();
+    //                 break;
+
+    //             case 3:
+    //                 manager.viewBookings();
+    //                 break;
+
+    //             case 0:
+    //                 cout<<"Exiting...\n";
+    //                 break;
+
+    //             default:
+    //                 cout<<"Invalid choice\n";
+    //         }
+
+    //     } while(choice != 0);
+    // }
 
     return 0;
 }
