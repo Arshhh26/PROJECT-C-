@@ -32,13 +32,13 @@ class AuthManager{
         //for registration
         void userRegistration()
         { 
-            string username , password , roomtype;
+            string username , password;
             cout<< "\n Registeration Section \n"; 
-            cout<<"Enter username:";
-            getline(cin,username);
+            cout<<"Enter username(No Spaces):";
+            cin>>username;
 
-            cout<<"Enter password:";
-            getline(cin,password);
+            cout<<"Enter password(No spaces):";
+            cin>>password;
             
             ofstream file("login.txt",ios::app);
             file<<username<<" "<<password<<" "<<endl;
@@ -55,10 +55,10 @@ class AuthManager{
             cout <<"\n Login \n";
 
             cout <<"Enter Username:";
-            getline(cin,username);
+            cin>>username;
 
             cout<<"Enter Password:";
-            getline(cin,password);
+            cin>>password;
 
             ifstream file("login.txt");
             string u,p;
@@ -66,12 +66,12 @@ class AuthManager{
             while (file>>u>>p) {
                 if (u==username && p==password) {
                     loggedUser=username;
-                    cout<<"Login successful!\n";
+                    cout<<"\nLogin successful!\n";
                     return true;
                 }
             }
 
-            cout << "Invalid credentials!\n";
+            cout << "\nInvalid credentials!\n";
             return false;
     }
 };
@@ -195,13 +195,15 @@ int main() {
     Manager manager;
 
     int choice;
+    bool end;
     string loggedUser;
 
     cout << "===== Hostel Management System =====\n";
 
     // LOGIN / REGISTER LOOP
     do {
-        cout << "\n1. Register\n2. Login\nChoice: ";
+        cout<<"____________________________________________________________________________";
+        cout << "\n1. Register\n2. Login\n3. Exit\nChoice: ";
         cin >> choice;
 
         // if (choice == 1) {
@@ -221,7 +223,13 @@ int main() {
                 choice=-1;  
             }
             break;
+        case 3:
+            cout<<"Exiting....";
+            choice=-1;
+            end=true;
 
+            break;
+            
         default:
             cout<< "Invalid choice! Try again.\n";
     }
@@ -229,32 +237,35 @@ int main() {
     } while(choice!=-1);
 
     // AFTER LOGIN
-    do{
-        cout<<"\n1. Book Room\n2. Check Availability\n3. View Bookings\n0. Exit\nChoice: ";
-        cin>>choice;
+    if(end!=true){
+        do{
+            cout<<"____________________________________________________________________________";
+            cout<<"\n1. Book Room\n2. Check Availability\n3. View Bookings\n0. Exit\nChoice: ";
+            cin>>choice;
 
-        switch(choice){
-            case 1:
-                manager.allocateRoom(loggedUser);
-                break;
+            switch(choice){
+                case 1:
+                    manager.allocateRoom(loggedUser);
+                    break;
 
-            case 2:
-                manager.showAvailability();
-                break;
+                case 2:
+                    manager.showAvailability();
+                    break;
 
-            case 3:
-                manager.viewBookings();
-                break;
+                case 3:
+                    manager.viewBookings();
+                    break;
 
-            case 0:
-                cout<<"Exiting...\n";
-                break;
+                case 0:
+                    cout<<"Exiting...\n";
+                    break;
 
-            default:
-                cout<<"Invalid choice\n";
-        }
+                default:
+                    cout<<"Invalid choice\n";
+            }
 
-    } while(choice != 0);
+        } while(choice != 0);
+    }
 
     return 0;
 }
